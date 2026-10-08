@@ -1,0 +1,17 @@
+# Netlify configuration for the Raremedia platform (Next.js 16).
+#
+# Database: Netlify Database (PostgreSQL). The connection string is injected as
+#           NETLIFY_DB_URL; the SQL files in netlify/database/migrations are
+#           applied automatically right before each deploy is published.
+# Uploads:  Netlify Blobs (set STORAGE_PROVIDER=netlify-blobs in the site env).
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

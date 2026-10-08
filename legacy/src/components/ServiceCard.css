@@ -1,0 +1,43 @@
+.service-card {
+  padding: 2rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  height: 100%;
+}
+
+.service-card h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.service-card p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  flex-grow: 1;
+}
+
+.service-card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 600;
+  font-size: 0.925rem;
+  color: var(--indigo);
+  transition: gap var(--transition), color var(--transition);
+}
+
+.service-card__link svg {
+  width: 17px;
+  height: 17px;
+  transition: transform var(--transition);
+}
+
+.service-card__link:hover {
+  color: var(--cyan);
+}
+
+.service-card__link:hover svg {
+  transform: translateX(4px);
+}

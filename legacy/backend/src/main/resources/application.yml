@@ -1,0 +1,32 @@
+server:
+  port: ${PORT:8090}
+  error:
+    include-stacktrace: never
+    include-message: never
+
+spring:
+  application:
+    name: raremedia-mailer
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    # Credentials come from the environment — never commit them.
+    # MAIL_USERNAME = the Gmail address, MAIL_PASSWORD = a Gmail App Password.
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 10000
+          timeout: 10000
+          writetimeout: 10000
+
+raremedia:
+  # Where "new service request" notifications are delivered.
+  company-inbox: ${COMPANY_INBOX:${MAIL_USERNAME:}}
+  # Comma-separated origins allowed to call the API (the website's URLs).
+  allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173,http://localhost:4173}

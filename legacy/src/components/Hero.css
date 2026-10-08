@@ -1,0 +1,333 @@
+.hero {
+  position: relative;
+  background: var(--navy-900);
+  color: var(--text-on-dark);
+  padding: calc(var(--nav-height) + clamp(3.5rem, 8vw, 6rem)) 0 clamp(5.5rem, 9vw, 8rem);
+  overflow: hidden;
+}
+
+/* Background decoration */
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  animation: pulseGlow 7s ease-in-out infinite;
+}
+
+.hero__orb--1 {
+  width: 480px;
+  height: 480px;
+  top: -160px;
+  left: -120px;
+  background: rgba(139, 92, 246, 0.35);
+}
+
+.hero__orb--2 {
+  width: 420px;
+  height: 420px;
+  bottom: -140px;
+  right: -80px;
+  background: rgba(236, 72, 153, 0.28);
+  animation-delay: 3s;
+}
+
+.hero__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse at 50% 40%, black 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 40%, black 30%, transparent 75%);
+}
+
+/* Layout */
+.hero__inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  align-items: center;
+  gap: clamp(2.5rem, 5vw, 4.5rem);
+}
+
+.hero__content > * {
+  animation: fadeUp 0.7s ease both;
+}
+
+.hero__content > :nth-child(2) {
+  animation-delay: 0.12s;
+}
+
+.hero__content > :nth-child(3) {
+  animation-delay: 0.24s;
+}
+
+.hero__content > :nth-child(4) {
+  animation-delay: 0.36s;
+}
+
+.hero__content > :nth-child(5) {
+  animation-delay: 0.48s;
+}
+
+.hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-on-dark);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  margin-bottom: 1.5rem;
+}
+
+.hero__badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan);
+}
+
+.hero h1 {
+  font-size: clamp(2.1rem, 5vw, 3.4rem);
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 1.25rem;
+}
+
+.hero__content > p {
+  font-size: clamp(1rem, 1.6vw, 1.12rem);
+  color: var(--text-on-dark-muted);
+  max-width: 540px;
+  margin-bottom: 2rem;
+}
+
+.hero__ctas {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.hero__contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 600;
+  color: var(--cyan);
+  transition: gap var(--transition);
+}
+
+.hero__contact-link svg {
+  width: 17px;
+  height: 17px;
+  transition: transform var(--transition);
+}
+
+.hero__contact-link:hover svg {
+  transform: translateX(4px);
+}
+
+.hero__points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.4rem;
+}
+
+.hero__points li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-on-dark-muted);
+}
+
+.hero__points svg {
+  width: 17px;
+  height: 17px;
+  color: var(--cyan);
+}
+
+/* Visual */
+.hero__visual {
+  position: relative;
+  animation: fadeUp 0.8s ease 0.3s both;
+}
+
+.hero__card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 24px 60px rgba(2, 6, 16, 0.45);
+}
+
+.hero__card--main {
+  position: relative;
+  z-index: 1;
+}
+
+.hero__card-bar {
+  display: flex;
+  gap: 6px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.hero__card-bar span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.hero__card-bar span:first-child {
+  background: #f87171;
+}
+
+.hero__card-bar span:nth-child(2) {
+  background: #fbbf24;
+}
+
+.hero__card-bar span:nth-child(3) {
+  background: #34d399;
+}
+
+.hero__card-body {
+  padding: 1.4rem 1.5rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.hero__code-line {
+  height: 10px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.hero__code-line--accent {
+  background: var(--accent-gradient);
+  opacity: 0.85;
+}
+
+.hero__chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  height: 110px;
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.hero__chart span {
+  flex: 1;
+  border-radius: 6px 6px 2px 2px;
+  background: var(--accent-gradient);
+  opacity: 0.85;
+  min-height: 12px;
+}
+
+.hero__card--float {
+  position: absolute;
+  z-index: 2;
+  animation: float 5.5s ease-in-out infinite;
+}
+
+.hero__card--stat {
+  top: -26px;
+  right: -14px;
+  padding: 0.9rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.hero__stat-value {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.35rem;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero__stat-label {
+  font-size: 0.78rem;
+  color: var(--text-on-dark-muted);
+}
+
+.hero__card--check {
+  bottom: -24px;
+  left: -18px;
+  padding: 0.9rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  animation-delay: 2.5s;
+}
+
+.hero__card--check svg {
+  width: 26px;
+  height: 26px;
+  color: #34d399;
+  flex-shrink: 0;
+}
+
+.hero__card--check strong {
+  display: block;
+  font-size: 0.88rem;
+  color: #fff;
+}
+
+.hero__card--check span {
+  font-size: 0.75rem;
+  color: var(--text-on-dark-muted);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 920px) {
+  .hero__inner {
+    grid-template-columns: 1fr;
+  }
+
+  .hero__visual {
+    max-width: 480px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .hero__card--stat {
+    right: 0;
+  }
+
+  .hero__card--check {
+    left: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero__ctas .btn {
+    width: 100%;
+  }
+
+  .hero__contact-link {
+    margin-inline: auto;
+  }
+}

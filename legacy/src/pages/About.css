@@ -1,0 +1,112 @@
+.about__intro {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: clamp(2.5rem, 5vw, 4rem);
+  align-items: start;
+}
+
+.about__intro-text h2 {
+  font-size: clamp(1.6rem, 3.2vw, 2.2rem);
+  margin: 0.85rem 0 1.1rem;
+}
+
+.about__intro-text p {
+  color: var(--text-muted);
+  margin-bottom: 1.1rem;
+}
+
+.about__intro-text .btn {
+  margin-top: 0.75rem;
+}
+
+.about__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.about__card {
+  padding: 1.75rem 1.6rem;
+}
+
+.about__card .icon-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
+  margin-bottom: 1rem;
+}
+
+.about__card .icon-badge svg {
+  width: 22px;
+  height: 22px;
+}
+
+.about__card h3 {
+  font-size: 1.15rem;
+  margin-bottom: 0.6rem;
+}
+
+.about__card p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.about__values {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.about__values li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+}
+
+.about__values svg {
+  width: 17px;
+  height: 17px;
+  color: var(--cyan);
+  flex-shrink: 0;
+  margin-top: 0.18rem;
+}
+
+/* The WhyChooseUs section already provides its own padding */
+.about__why {
+  padding: 0;
+}
+
+.about__why .why {
+  background: transparent;
+}
+
+.about__cta-section {
+  padding-top: 0;
+}
+
+.about__cta {
+  text-align: center;
+  background: var(--navy-900);
+  border-radius: var(--radius-lg);
+  padding: clamp(2.5rem, 6vw, 4rem) 2rem;
+}
+
+.about__cta h2 {
+  color: #fff;
+  font-size: clamp(1.5rem, 3.2vw, 2.1rem);
+  margin-bottom: 0.75rem;
+}
+
+.about__cta p {
+  color: var(--text-on-dark-muted);
+  max-width: 520px;
+  margin: 0 auto 1.75rem;
+}
+
+@media (max-width: 920px) {
+  .about__intro {
+    grid-template-columns: 1fr;
+  }
+}

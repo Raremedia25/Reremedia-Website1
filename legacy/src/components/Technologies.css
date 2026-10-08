@@ -1,0 +1,62 @@
+.tech__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.tech__group {
+  padding: 1.75rem 1.6rem;
+}
+
+.tech__group-head {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.2rem;
+}
+
+.tech__group-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--accent-gradient-soft);
+  color: var(--indigo);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.tech__group-icon svg {
+  width: 21px;
+  height: 21px;
+}
+
+.tech__group h3 {
+  font-size: 1.05rem;
+}
+
+.tech__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.tech__chips li {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.42rem 0.9rem;
+  border-radius: 999px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  transition: color var(--transition), border-color var(--transition),
+    background var(--transition), transform var(--transition);
+}
+
+.tech__chips li:hover {
+  color: var(--indigo);
+  border-color: rgba(139, 92, 246, 0.4);
+  background: var(--indigo-soft);
+  transform: translateY(-2px);
+}

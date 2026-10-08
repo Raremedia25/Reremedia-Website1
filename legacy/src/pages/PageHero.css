@@ -1,0 +1,31 @@
+/* Shared inner-page hero banner */
+.page-hero {
+  background:
+    radial-gradient(circle at 80% 10%, rgba(236, 72, 153, 0.18), transparent 45%),
+    radial-gradient(circle at 10% 90%, rgba(139, 92, 246, 0.22), transparent 50%),
+    var(--navy-900);
+  color: var(--text-on-dark);
+  padding: calc(var(--nav-height) + clamp(3rem, 6vw, 4.5rem)) 0 clamp(3rem, 6vw, 4.5rem);
+  text-align: center;
+}
+
+.page-hero h1 {
+  color: #fff;
+  font-size: clamp(1.9rem, 4.5vw, 2.9rem);
+  font-weight: 800;
+  max-width: 760px;
+  margin: 0 auto 1rem;
+  animation: fadeUp 0.6s ease both;
+}
+
+.page-hero p {
+  color: var(--text-on-dark-muted);
+  font-size: 1.05rem;
+  max-width: 640px;
+  margin: 0 auto;
+  animation: fadeUp 0.6s ease 0.12s both;
+}
+
+.page-hero .eyebrow {
+  animation: fadeUp 0.6s ease both;
+}

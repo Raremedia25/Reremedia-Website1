@@ -1,0 +1,45 @@
+# Dependencies
+node_modules
+
+# Next.js
+.next
+out
+next-env.d.ts
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
+# Database (SQLite)
+prisma/*.db
+prisma/*.db-journal
+*.db
+*.db-journal
+
+# Uploaded media (local storage adapter)
+storage/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db
+
+# Legacy site (kept for reference, has its own ignores)
+legacy/node_modules
+legacy/dist
+legacy/backend/target
+legacy/backend/run-mailer.cmd
+legacy/.netlify
+
+# Netlify CLI state
+.netlify
+
+# TypeScript incremental cache
+*.tsbuildinfo
