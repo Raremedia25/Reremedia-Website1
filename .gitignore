@@ -18,7 +18,7 @@ prisma/*.db-journal
 *.db-journal
 
 # Uploaded media (local storage adapter)
-storage/
+/storage/
 
 # Logs
 *.log
