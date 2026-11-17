@@ -49,6 +49,7 @@ export default async function EditProjectPage({ params, searchParams }: { params
           clientType: project.clientType ?? "",
           completedAt: toDateInputValue(project.completedAt),
           demoUrl: project.demoUrl ?? "",
+          demoKey: project.demoKey ?? "",
           githubUrl: project.githubUrl ?? "",
           features: parseList(project.features).join("\n"),
           technologies: parseList(project.technologies).join("\n"),
@@ -57,7 +58,7 @@ export default async function EditProjectPage({ params, searchParams }: { params
           seoTitle: project.seoTitle ?? "",
           seoDescription: project.seoDescription ?? "",
           featuredImage: project.featuredImage ? toMediaDTO(project.featuredImage) : null,
-          gallery: project.images.map((pi) => ({ media: toMediaDTO(pi.media), caption: pi.caption ?? "" })),
+          gallery: project.images.map((pi) => ({ media: toMediaDTO(pi.media), caption: pi.caption ?? "", kind: pi.kind === "SCREENSHOT" ? ("SCREENSHOT" as const) : ("GALLERY" as const) })),
         }}
       />
     </>

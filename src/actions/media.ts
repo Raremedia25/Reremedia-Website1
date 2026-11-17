@@ -14,7 +14,7 @@ export async function updateMediaAction(id: string, _prev: ActionState, formData
     const user = await assertPermission("media:manage");
     const parsed = mediaUpdateSchema.safeParse(formDataToObject(formData));
     if (!parsed.success) return { error: "Please check the form.", errors: flattenErrors(parsed.error) };
-    await prisma.media.update({ where: { id }, data: { alt: parsed.data.alt, caption: parsed.data.caption, folder: parsed.data.folder.toLowerCase().replace(/[^a-z0-9-_]/g, "") || "general" } });
+    await prisma.media.update({ where: { id }, data: { alt: parsed.data.alt, caption: parsed.data.caption, source: parsed.data.source, folder: parsed.data.folder.toLowerCase().replace(/[^a-z0-9-_]/g, "") || "general" } });
     await audit(user, "media.update", "media", id, parsed.data);
     revalidatePath("/admin/media");
     revalidatePublic("all");

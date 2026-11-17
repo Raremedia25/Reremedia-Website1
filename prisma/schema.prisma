@@ -94,6 +94,7 @@ model Media {
   variants     String   @default("[]") // JSON MediaVariant[]
   blurDataUrl  String?
   isDemo       Boolean  @default(false)
+  source       String   @default("UPLOAD") // UPLOAD | AI_GENERATED | ILLUSTRATION
   uploadedById String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -125,6 +126,7 @@ model Project {
   clientType      String?
   completedAt     DateTime?
   demoUrl         String?
+  demoKey         String?   // interactive demo under /demos (see src/components/demos/registry.ts); "none" switches it off
   githubUrl       String?
   features        String    @default("[]") // JSON string[]
   technologies    String    @default("[]") // JSON string[]
@@ -154,6 +156,7 @@ model ProjectImage {
   projectId String
   mediaId   String
   order     Int      @default(0)
+  kind      String   @default("GALLERY") // GALLERY (photos, illustrations) | SCREENSHOT (software interface)
   caption   String?
   createdAt DateTime @default(now())
 

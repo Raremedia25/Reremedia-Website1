@@ -23,6 +23,7 @@ export default async function NewProjectPage() {
           clientType: "",
           completedAt: "",
           demoUrl: "",
+          demoKey: "",
           githubUrl: "",
           features: "",
           technologies: "",

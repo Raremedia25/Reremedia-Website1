@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Maximize2 } from "lucide-react";
+import { imageOriginLabel } from "@/lib/media/image-src";
 import { cn } from "@/lib/utils";
 import { Lightbox, type LightboxItem } from "./Lightbox";
 import { ResponsiveImage } from "./ResponsiveImage";
@@ -26,7 +27,7 @@ export function GalleryGrid({ items, columns = 3, showTitles = false, className 
               <span className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-night-900/70 text-white opacity-0 transition-opacity group-hover:opacity-100">
                 <Maximize2 className="h-4 w-4" />
               </span>
-              {item.image.isDemo && <span className="absolute left-3 top-3 chip bg-amber-100 text-amber-800">Demo image</span>}
+              {imageOriginLabel(item.image) && <span className="absolute left-3 top-3 chip bg-amber-100 text-amber-800">{imageOriginLabel(item.image)}</span>}
               {(showTitles || item.caption || item.image.caption) && (
                 <span className="block p-3.5">
                   {showTitles && item.title && <span className="block font-display text-sm font-semibold text-ink-900">{item.title}</span>}

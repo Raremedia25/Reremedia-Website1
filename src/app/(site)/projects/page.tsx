@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { MousePointerClick } from "lucide-react";
 import { CtaBanner } from "@/components/site/CtaBanner";
 import { EmptyState } from "@/components/site/EmptyState";
 import { FilterBar } from "@/components/site/FilterBar";
@@ -20,7 +22,11 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
 
   return (
     <>
-      <PageHero eyebrow="Projects" title="What Raremedia has built" description="Browse our portfolio of business systems, platforms and applications. Filter by category or search for a feature you need." />
+      <PageHero eyebrow="Projects" title="What Raremedia has built" description="Browse our portfolio of business systems, platforms and applications. Filter by category or search for a feature you need.">
+        <Link href="/demos" className="btn btn-primary">
+          <MousePointerClick className="h-4 w-4" /> Try the interactive demos
+        </Link>
+      </PageHero>
 
       <section className="section">
         <div className="container-x">

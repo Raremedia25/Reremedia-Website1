@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, Calendar, CheckCircle2, ExternalLink, Tag, User } from "lucide-react";
+import { ArrowRight, Calendar, CheckCircle2, ExternalLink, FlaskConical, MousePointerClick, Tag, User } from "lucide-react";
+import { resolveDemo } from "@/components/demos/registry";
+import { getDemoShots } from "@/components/demos/screens";
+import { ScreenGallery } from "@/components/site/ScreenGallery";
 import { GithubIcon } from "@/components/site/SocialIcon";
 import { GalleryGrid } from "@/components/site/GalleryGrid";
 import { ProjectCard } from "@/components/site/ProjectCard";
@@ -10,7 +13,7 @@ import { ShareButtons } from "@/components/site/ShareButtons";
 import { PROJECT_STATUS_LABELS, type ProjectStatus } from "@/lib/constants";
 import { parseList } from "@/lib/json";
 import { renderMarkdown } from "@/lib/markdown";
-import { toImageSource, variantUrl } from "@/lib/media/image-src";
+import { imageOriginLabel, toImageSource, variantUrl } from "@/lib/media/image-src";
 import { getProjectBySlug, getRelatedProjects, incrementProjectViews } from "@/lib/queries/public";
 import { cn, formatDate, siteUrl } from "@/lib/utils";
 
@@ -41,8 +44,20 @@ export default async function ProjectPage({ params }: { params: Params }) {
 
   const featured = toImageSource(project.featuredImage ?? project.images[0]?.media);
   const gallery = project.images
+    .filter((pi) => pi.kind !== "SCREENSHOT")
     .map((pi) => ({ image: toImageSource(pi.media)!, caption: pi.caption, title: project.title }))
     .filter((g) => g.image);
+  const demo = resolveDemo(project);
+  const demoHref = demo ? `/demos/${demo.key}?from=${project.slug}` : null;
+  // Screenshots uploaded in the admin come first, then captures of the interactive demo.
+  const screens = [
+    ...project.images
+      .filter((pi) => pi.kind === "SCREENSHOT")
+      .map((pi) => ({ image: toImageSource(pi.media)!, label: pi.caption || pi.media.caption || pi.media.alt || "Screenshot", note: imageOriginLabel(toImageSource(pi.media)) ?? undefined }))
+      .filter((s) => s.image),
+    ...(demo ? getDemoShots(demo.key).map((s) => ({ image: s.image, label: s.label, mobile: s.mobile, note: "From the interactive demo · sample data" })) : []),
+  ];
+  const featuredLabel = imageOriginLabel(featured);
   const features = parseList(project.features);
   const technologies = parseList(project.technologies);
   const status = PROJECT_STATUS_LABELS[project.projectStatus as ProjectStatus] ?? project.projectStatus;
@@ -83,7 +98,12 @@ export default async function ProjectPage({ params }: { params: Params }) {
               <h1 className="font-display mt-4 text-3xl md:text-5xl font-bold tracking-tight leading-[1.1]">{project.title}</h1>
               <p className="mt-5 text-lg text-ink-300 leading-relaxed">{project.summary}</p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link href={`/request-project?similar=${encodeURIComponent(project.title)}`} className="btn btn-primary">
+                {demoHref && (
+                  <Link href={demoHref} className="btn btn-primary">
+                    <MousePointerClick className="h-4 w-4" /> Try Interactive Demo
+                  </Link>
+                )}
+                <Link href={`/request-project?similar=${encodeURIComponent(project.title)}`} className={cn("btn", demoHref ? "btn-ghost-light" : "btn-primary")}>
                   Request a Similar System <ArrowRight className="h-4 w-4" />
                 </Link>
                 {project.demoUrl && (
@@ -100,7 +120,7 @@ export default async function ProjectPage({ params }: { params: Params }) {
             </div>
             <div className="animate-fade-up" style={{ animationDelay: "120ms" }}>
               <ResponsiveImage image={featured} className="aspect-[16/10] rounded-2xl border border-white/10 shadow-2xl" sizes="(min-width: 1024px) 50vw, 100vw" priority />
-              {featured?.isDemo && <p className="mt-2 text-xs text-amber-300">Demo image — representative visual, not a product screenshot.</p>}
+              {featuredLabel && <p className="mt-2 text-xs text-amber-300">{featuredLabel} — representative visual, not a photograph of a customer or a product screenshot.</p>}
             </div>
           </div>
         </div>
@@ -121,6 +141,40 @@ export default async function ProjectPage({ params }: { params: Params }) {
                     </li>
                   ))}
                 </ul>
+              </div>
+            )}
+
+            {demo && demoHref && (
+              <div className="mt-12 overflow-hidden rounded-2xl border border-ink-200 bg-night-900 text-white">
+                <div className="relative p-6 md:p-8">
+                  <div className="absolute inset-0 bg-grid opacity-60" aria-hidden="true" />
+                  <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full opacity-40 blur-3xl" style={{ background: demo.accent }} aria-hidden="true" />
+                  <div className="relative">
+                    <span className="chip glass text-amber-200">
+                      <FlaskConical className="h-3.5 w-3.5" /> Simulated demo · sample data
+                    </span>
+                    <h2 className="font-display mt-3 text-2xl font-bold">Try it yourself</h2>
+                    <p className="mt-2 max-w-xl text-ink-300">{demo.tagline} The demo runs in your browser and is not connected to any customer or production system.</p>
+                    <ul className="mt-4 grid gap-2 text-sm text-ink-300 sm:grid-cols-2">
+                      {demo.tryIt.slice(0, 4).map((t) => (
+                        <li key={t} className="flex items-start gap-2">
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brand-300" /> {t}
+                        </li>
+                      ))}
+                    </ul>
+                    <Link href={demoHref} className="btn btn-primary mt-6">
+                      <MousePointerClick className="h-4 w-4" /> Try Interactive Demo
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {screens.length > 0 && (
+              <div className="mt-12">
+                <h2 className="font-display text-2xl font-bold text-ink-900">Software screens</h2>
+                <p className="mt-1 text-sm text-ink-500">Sign-in, dashboard, tables, forms, reports, settings and the mobile view. Click a screen to enlarge it.</p>
+                <ScreenGallery items={screens} title={project.title} className="mt-5" />
               </div>
             )}
 

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import type { ImageSource } from "@/lib/media/image-src";
+import { imageOriginLabel, type ImageSource } from "@/lib/media/image-src";
 import { cn } from "@/lib/utils";
 
 export interface LightboxItem {
@@ -108,7 +108,7 @@ export function Lightbox({ items, index, onClose, onNavigate }: { items: Lightbo
           </p>
         )}
         {(item.caption || item.image.caption) && <p className="mt-1 text-sm text-ink-300">{item.caption || item.image.caption}</p>}
-        {item.image.isDemo && <p className="mt-1 text-xs text-amber-300">Demo image</p>}
+        {imageOriginLabel(item.image) && <p className="mt-1 text-xs text-amber-300">{imageOriginLabel(item.image)}</p>}
       </div>
     </div>
   );
