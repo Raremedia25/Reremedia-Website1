@@ -106,6 +106,11 @@ enforced in every page, server action and API route (`assertPermission`).
   uploaded, AI-generated or illustration. AI-generated images and illustrations
   are labelled on the public site so they are never mistaken for photos of real
   customers or locations.
+* **Generate with AI** (third tab of the image picker): describe a picture and
+  it is created through the OpenAI Images API, saved to the library and marked
+  AI-generated. Needs `OPENAI_API_KEY` in the environment (see `.env.example`);
+  without it the tab explains how to switch it on. Limited to 20 images per
+  admin per hour; each image is billed by the provider.
 * Replace an image in place (all pages using it update), edit alt/caption/folder, delete (files removed from storage).
 
 ### Interactive demos (`/demos`)
