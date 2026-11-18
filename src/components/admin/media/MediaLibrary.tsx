@@ -6,6 +6,7 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { Check, Copy, Loader2, RefreshCw, Trash2, X } from "lucide-react";
 import { bulkDeleteMediaAction, deleteMediaAction, updateMediaAction } from "@/actions/media";
 import type { ActionState } from "@/lib/actions-shared";
+import { MEDIA_SOURCES, MEDIA_SOURCE_LABELS } from "@/lib/constants";
 import type { MediaDTO } from "@/lib/media/dto";
 import { cn, formatBytes, formatDate } from "@/lib/utils";
 import { ConfirmButton, Field, FormAlert, SubmitButton } from "../forms";
@@ -111,7 +112,7 @@ export function MediaLibrary({ items, usage, folders, activeFolder, q }: { items
                     <input type="checkbox" className="sr-only" checked={isChecked} onChange={() => toggleCheck(m.id)} aria-label={`Select ${m.originalName}`} />
                     <Check className="h-4 w-4" />
                   </label>
-                  {m.isDemo && <span className="absolute right-2 top-2 chip bg-amber-100 text-amber-800 text-[10px]">Demo</span>}
+                  {m.isDemo ? <span className="absolute right-2 top-2 chip bg-amber-100 text-amber-800 text-[10px]">Demo</span> : m.source === "AI_GENERATED" ? <span className="absolute right-2 top-2 chip bg-sky-100 text-sky-800 text-[10px]">AI</span> : null}
                 </li>
               );
             })}
@@ -212,6 +213,15 @@ function MediaDetails({ media, usedIn, onClose }: { media: MediaDTO; usedIn: num
           </Field>
           <Field label="Folder" name="folder" error={state.errors?.folder}>
             <input id="folder" name="folder" className="input" defaultValue={media.folder} maxLength={60} />
+          </Field>
+          <Field label="Origin" name="source" error={state.errors?.source} hint="AI-generated images and illustrations are labelled on the public site.">
+            <select id="source" name="source" className="input" defaultValue={media.source}>
+              {MEDIA_SOURCES.map((s) => (
+                <option key={s} value={s}>
+                  {MEDIA_SOURCE_LABELS[s]}
+                </option>
+              ))}
+            </select>
           </Field>
           <SubmitButton className="btn-sm w-full" pendingText="Saving…">
             Save details

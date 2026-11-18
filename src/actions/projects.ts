@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { audit } from "@/lib/audit";
 import { assertPermission } from "@/lib/auth/current-user";
+import { DEMO_KEYS, DEMO_NONE } from "@/components/demos/registry";
+import { MEDIA_SOURCES, type MediaSource } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 import { parseJson, stringifyList } from "@/lib/json";
 import { slugify, uniqueSlug } from "@/lib/slug";
@@ -13,6 +15,8 @@ import { flattenErrors, formDataToObject, projectSchema } from "@/lib/validation
 interface GalleryEntry {
   mediaId: string;
   caption?: string;
+  kind?: string;
+  source?: string;
 }
 
 function parseGallery(raw: string | undefined): GalleryEntry[] {
@@ -66,6 +70,7 @@ export async function saveProjectAction(id: string | null, _prev: ActionState, f
       clientType: data.clientType,
       completedAt: data.completedAt,
       demoUrl: data.demoUrl,
+      demoKey: data.demoKey && (data.demoKey === DEMO_NONE || DEMO_KEYS.includes(data.demoKey)) ? data.demoKey : null,
       githubUrl: data.githubUrl,
       features: stringifyList(data.features),
       technologies: stringifyList(data.technologies),
@@ -83,8 +88,13 @@ export async function saveProjectAction(id: string | null, _prev: ActionState, f
       await tx.projectImage.deleteMany({ where: { projectId: project.id } });
       if (gallery.length) {
         await tx.projectImage.createMany({
-          data: gallery.map((g, i) => ({ projectId: project.id, mediaId: g.mediaId, order: i, caption: g.caption?.trim().slice(0, 300) || null })),
+          data: gallery.map((g, i) => ({ projectId: project.id, mediaId: g.mediaId, order: i, kind: g.kind === "SCREENSHOT" ? "SCREENSHOT" : "GALLERY", caption: g.caption?.trim().slice(0, 300) || null })),
         });
+        // The origin of an image (uploaded / AI-generated / illustration) is stored on the image itself.
+        for (const source of MEDIA_SOURCES) {
+          const ids = gallery.filter((g) => (g.source as MediaSource) === source).map((g) => g.mediaId);
+          if (ids.length) await tx.media.updateMany({ where: { id: { in: ids }, source: { not: source } }, data: { source } });
+        }
       }
       return project;
     });

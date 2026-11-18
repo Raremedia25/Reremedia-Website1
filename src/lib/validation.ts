@@ -4,6 +4,7 @@ import {
   CATEGORY_TYPES,
   MESSAGE_STATUSES,
   POST_TYPES,
+  MEDIA_SOURCES,
   PROJECT_STATUSES,
   PROJECT_TYPES,
   PUBLISH_STATUSES,
@@ -95,6 +96,12 @@ export const projectSchema = z.object({
   clientType: trimmed(160).optional().transform((v) => v || null),
   completedAt: optionalDate,
   demoUrl: optionalUrl,
+  demoKey: z
+    .string()
+    .trim()
+    .max(40)
+    .optional()
+    .transform((v) => v || null),
   githubUrl: optionalUrl,
   features: listField,
   technologies: listField,
@@ -173,6 +180,7 @@ export const mediaUpdateSchema = z.object({
   alt: trimmed(300).optional().default(""),
   caption: trimmed(500).optional().default(""),
   folder: trimmed(60).optional().default("general"),
+  source: z.enum(MEDIA_SOURCES).optional().default("UPLOAD"),
 });
 
 export const messageStatusSchema = z.enum(MESSAGE_STATUSES);

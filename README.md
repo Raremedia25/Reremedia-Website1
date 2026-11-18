@@ -49,6 +49,7 @@ from your `.env` (defaults: `admin@raremedia.local` / `ChangeMe123!`).
 | `npm run db:migration -- <slug>` | Generate a SQL migration in `netlify/database/migrations` from `prisma/schema.prisma` |
 | `npm run db:seed` | Seed admin, categories, services, settings and demo content (safe to re-run) |
 | `npm run db:seed -- --force` | Re-create the demo projects/posts/images |
+| `npm run db:seed -- --add-missing` | Add only the seed projects whose slug does not exist yet (existing content untouched) |
 | `npm run db:push` / `db:migrate` | Prisma schema sync for a **non-Netlify** PostgreSQL/SQLite database only |
 | `npm run db:studio` | Prisma Studio (database browser) |
 
@@ -64,6 +65,7 @@ from your `.env` (defaults: `admin@raremedia.local` / `ChangeMe123!`).
 | `/solutions` | Solutions for every business (industries) |
 | `/projects`, `/projects/[slug]` | Portfolio with category filter + search; project pages with gallery, features, technologies, status, demo/GitHub links, "Request a similar system" |
 | `/portfolio` | Public image gallery with lightbox, filters and search |
+| `/demos`, `/demos/[key]` | Interactive product demos (POS, Ikimina, restaurant, certificates, transport, exam, audit working papers) |
 | `/blog`, `/blog/[slug]` | Blog / updates with categories, tags, pagination |
 | `/about` | Mission, vision, values, process, client testimonials |
 | `/contact` | Contact form, email, phone, WhatsApp |
@@ -98,8 +100,35 @@ enforced in every page, server action and API route (`assertPermission`).
 * Upload one or many files (drag & drop), JPG/PNG/WebP, size limit `MAX_UPLOAD_MB`.
 * Files are verified with `sharp`, metadata stripped, re-encoded and resized to
   responsive WebP variants (480/960/1440/1920) plus a blur placeholder.
-* Galleries: reorder (drag or arrows), captions, set featured, remove.
+* Galleries: reorder (drag or arrows), descriptions, set the main image, replace, remove.
+* Project images are filed as **screenshots** (shown under "Software screens") or
+  **gallery images** (photos, illustrations), and each image has an **origin**:
+  uploaded, AI-generated or illustration. AI-generated images and illustrations
+  are labelled on the public site so they are never mistaken for photos of real
+  customers or locations.
+* **Generate with AI** (third tab of the image picker): describe a picture and
+  it is created through the OpenAI Images API, saved to the library and marked
+  AI-generated. Needs `OPENAI_API_KEY` in the environment (see `.env.example`);
+  without it the tab explains how to switch it on. Limited to 20 images per
+  admin per hour; each image is billed by the provider.
 * Replace an image in place (all pages using it update), edit alt/caption/folder, delete (files removed from storage).
+
+### Interactive demos (`/demos`)
+Each demo in `src/components/demos` is a small client-side application built on
+`kit.tsx` (simulated sign-in, sidebar, tables, charts, receipt). They run only
+in the visitor's browser on **isolated sample data**: no database, no customer
+data, no payments, and a reload restores the original state. Every demo is
+labelled as simulated.
+
+* `registry.ts` lists the demos. A project gets its "Try Interactive Demo"
+  button from the **Interactive demo** field in the project form; left on
+  "Automatic", the project title is matched against the registry.
+* Deep links: `/demos/pos?auth=1&screen=reports` opens a screen directly.
+* `public/demo-screens/` holds real captures of every demo screen, shown on
+  project pages under "Software screens". Re-create them after changing a demo
+  with `scripts/capture-demo-screens.mjs` (instructions at the top of the file).
+* To add a demo: create the component, register it in `registry.ts` and
+  `DemoRunner.tsx`, list its screens in `screens.ts`, capture the screens.
 
 ---
 

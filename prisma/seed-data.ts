@@ -95,6 +95,10 @@ export interface SeedProject {
   order: number;
   /** Existing screenshot in legacy/src/assets/projects (real product image). */
   screenshot?: string;
+  /** Sector illustration from prisma/illustrations.ts (SECTOR_SCENES), added to the gallery. */
+  scene?: "classroom" | "shop" | "restaurant" | "transport" | "ikimina" | "audit";
+  /** Interactive demo under /demos (see src/components/demos/registry.ts). */
+  demoKey?: string;
   /** Colours for the generated placeholder cover (demo image). */
   accent: [string, string];
   caption?: string;
@@ -131,6 +135,8 @@ Savings groups (ikimina), cooperatives, associations and any organization that c
     isFeatured: true,
     order: 1,
     screenshot: "ikimina.png",
+    scene: "ikimina",
+    demoKey: "ikimina",
     accent: ["#7c3aed", "#ec4899"],
     caption: "Ikimina Management System – product cover",
   },
@@ -158,6 +164,8 @@ Built for an electronics shop, this system keeps products, stock levels, sales a
     clientType: "Electronics shop",
     isFeatured: true,
     order: 2,
+    scene: "shop",
+    demoKey: "pos",
     accent: ["#0891b2", "#22d3ee"],
   },
   {
@@ -188,6 +196,8 @@ Tax features are only added when a client specifically requires them.`,
     isFeatured: true,
     order: 3,
     screenshot: "hotel-bar.png",
+    scene: "restaurant",
+    demoKey: "bistro",
     accent: ["#d97706", "#fbbf24"],
     caption: "Dashboard of the hotel & bar management system",
   },
@@ -406,6 +416,8 @@ Audit teams plan engagements, record findings and recommendations, follow up on 
     clientType: "Organizations & institutions",
     order: 12,
     screenshot: "audit.png",
+    scene: "audit",
+    demoKey: "audit",
     accent: ["#0f766e", "#2dd4bf"],
   },
   {
@@ -439,6 +451,187 @@ Track income and expenses, set budgets and produce financial reports with dashbo
     order: 14,
     screenshot: "financial.png",
     accent: ["#d97706", "#fbbf24"],
+  },
+  {
+    title: "Raremedia POS",
+    slug: "raremedia-pos",
+    category: "pos-inventory",
+    summary: "Point-of-sale for shops and supermarkets: fast product search, cart, receipts, stock that updates with every sale and daily sales reports.",
+    content: `## Overview
+
+Raremedia POS is the counter screen for a retail business. The cashier finds a product, adds it to the cart, takes the payment and hands over a receipt, while stock and the day's figures update on their own.
+
+## Highlights
+
+- Product catalogue with categories, prices and stock levels
+- Cart with quantities and a running total
+- Cash and Mobile Money recorded per sale
+- Receipts for a thermal printer
+- Low-stock alerts
+- Sales, category and top-product reports
+
+## Try it
+
+Open the interactive demo to add products to a cart, complete a simulated sale and see the sample receipt.`,
+    features: ["Product catalogue", "Cart and quantities", "Receipts", "Stock control", "Low-stock alerts", "Sales history", "Reports", "Settings"],
+    technologies: [],
+    projectStatus: "COMPLETED",
+    clientType: "Shops & supermarkets",
+    isFeatured: true,
+    order: 15,
+    scene: "shop",
+    demoKey: "pos",
+    accent: ["#0891b2", "#22d3ee"],
+  },
+  {
+    title: "Le Bistro Du Coin",
+    slug: "le-bistro-du-coin",
+    category: "pos-inventory",
+    summary: "Restaurant and bar ordering system: tables, menu, running orders, service charge, bills and receipts.",
+    content: `## Overview
+
+A waiter opens a table, adds dishes and drinks from the menu and settles the bill when the guests are ready. The manager sees open tables and the day's sales at a glance.
+
+## Highlights
+
+- Tables with free / occupied status
+- Menu by category, with items that can be switched off when they run out
+- Orders with quantities per table
+- Bill with service charge
+- Receipts
+- Sales by menu category and most-ordered items
+
+## Try it
+
+Open the interactive demo to create a sample order, calculate the bill and generate a sample receipt.`,
+    features: ["Tables", "Menu management", "Orders", "Service charge", "Bills", "Receipts", "Reports"],
+    technologies: [],
+    projectStatus: "COMPLETED",
+    clientType: "Restaurants & bars",
+    order: 16,
+    scene: "restaurant",
+    demoKey: "bistro",
+    accent: ["#d97706", "#fbbf24"],
+  },
+  {
+    title: "Certificate Generator",
+    slug: "certificate-generator",
+    category: "education",
+    summary: "Issue training certificates from student and course details, each with a number and a QR code that anyone can scan to verify it.",
+    content: `## Overview
+
+Training centres enter the student and the course, preview the certificate and issue it. Every certificate carries a number and a QR code, so an employer can check that it is genuine.
+
+## Highlights
+
+- Student, course, grade and award date
+- Live certificate preview
+- Certificate numbering
+- QR code verification
+- Register of issued certificates
+- Courses overview
+
+## Try it
+
+Open the interactive demo to enter sample student information, pick a course, preview the certificate and verify it through its QR code.`,
+    features: ["Student details", "Course selection", "Certificate preview", "Certificate numbering", "QR verification", "Issued certificates register"],
+    technologies: [],
+    projectStatus: "COMPLETED",
+    clientType: "Training centres & schools",
+    order: 17,
+    scene: "classroom",
+    demoKey: "certificates",
+    accent: ["#059669", "#34d399"],
+  },
+  {
+    title: "UMUSARE Transport",
+    slug: "umusare-transport",
+    category: "booking",
+    summary: "Transport booking for cars and motorcycles: available vehicles, fare estimates, trip booking and route display.",
+    content: `## Overview
+
+A passenger chooses where to be picked up and where to go, compares a car with a motorcycle, sees the fare and books. Dispatch follows each trip from assignment to completion.
+
+## Highlights
+
+- Vehicles and drivers with their availability
+- Pick-up and destination selection
+- Fare estimate by distance and vehicle type
+- Booking with driver assignment
+- Route shown on a map
+- Trip statuses and daily reports
+
+## Try it
+
+Open the interactive demo to see sample vehicles, make a booking and view a sample route on a map.`,
+    features: ["Vehicles", "Drivers", "Fare estimates", "Trip booking", "Route map", "Trip statuses", "Reports"],
+    technologies: [],
+    projectStatus: "COMPLETED",
+    clientType: "Transport operators",
+    order: 18,
+    scene: "transport",
+    demoKey: "transport",
+    accent: ["#2563eb", "#22d3ee"],
+  },
+  {
+    title: "Recruitment Examination",
+    slug: "recruitment-examination",
+    category: "education",
+    summary: "Online examination platform for recruitment: timed tests, automatic marking, a pass mark and instant results.",
+    content: `## Overview
+
+Candidates sit a timed test on a computer or phone. Answers are marked automatically, results are available immediately and recruiters compare candidates on the same questions.
+
+## Highlights
+
+- Question bank by topic
+- Timed examinations that hand in automatically
+- Automatic marking against a pass mark
+- Results list for all candidates
+- Answer review
+- Settings for duration, pass mark and question order
+
+## Try it
+
+Open the interactive demo to sit a short sample examination and see your result.`,
+    features: ["Question bank", "Timed examinations", "Automatic marking", "Pass mark", "Results", "Answer review"],
+    technologies: [],
+    projectStatus: "COMPLETED",
+    clientType: "Employers & institutions",
+    order: 19,
+    scene: "classroom",
+    demoKey: "exam",
+    accent: ["#4f46e5", "#818cf8"],
+  },
+  {
+    title: "Audit Working Papers",
+    slug: "audit-working-papers",
+    category: "business-management",
+    summary: "Audit file management: indexed folders, working papers with objective, work performed and conclusion, review notes and sign-off.",
+    content: `## Overview
+
+Audit teams keep the whole engagement file in one place. Each working paper sits in its section, shows who prepared and reviewed it and records the conclusion reached.
+
+## Highlights
+
+- Indexed sections from planning to completion
+- Working papers with objective, work performed and conclusion
+- Prepared / reviewed status and sign-off
+- Review notes
+- Moving papers between sections
+- Audit trail of every change
+
+## Try it
+
+Open the interactive demo to browse the folders, open sample working papers and see how documents are organised.`,
+    features: ["Indexed folders", "Working papers", "Review and sign-off", "Review notes", "Document organisation", "Audit trail"],
+    technologies: [],
+    projectStatus: "COMPLETED",
+    clientType: "Audit firms & internal audit",
+    order: 20,
+    scene: "audit",
+    demoKey: "audit",
+    accent: ["#0f766e", "#2dd4bf"],
   },
 ];
 

@@ -5,6 +5,7 @@ import { useActionState, useState } from "react";
 import { Eye } from "lucide-react";
 import { saveProjectAction } from "@/actions/projects";
 import type { ActionState } from "@/lib/actions-shared";
+import { DEMOS, DEMO_NONE } from "@/components/demos/registry";
 import { PROJECT_STATUS_LABELS, PROJECT_STATUSES, PUBLISH_STATUSES } from "@/lib/constants";
 import type { MediaDTO } from "@/lib/media/dto";
 import { Field, FormAlert, SubmitButton, Toggle } from "./forms";
@@ -25,6 +26,7 @@ export interface ProjectFormValues {
   clientType: string;
   completedAt: string;
   demoUrl: string;
+  demoKey: string;
   githubUrl: string;
   features: string;
   technologies: string;
@@ -85,7 +87,7 @@ export function ProjectForm({ values, categories, created }: { values: ProjectFo
 
         <div className="card p-5 md:p-6 space-y-5">
           <h2 className="font-display text-lg font-bold text-ink-900">Images</h2>
-          <GalleryManager initial={values.gallery} folder="projects" onSetFeatured={setFeatured} />
+          <GalleryManager initial={values.gallery} folder="projects" onSetFeatured={setFeatured} featuredId={featured?.id ?? null} kinds />
         </div>
 
         <div className="card p-5 md:p-6 space-y-5">
@@ -141,7 +143,8 @@ export function ProjectForm({ values, categories, created }: { values: ProjectFo
         </div>
 
         <div className="card p-5 space-y-4">
-          <FeaturedImageField key={featured?.id ?? "none"} initial={featured} folder="projects" />
+          <FeaturedImageField key={featured?.id ?? "none"} initial={featured} folder="projects" label="Main project image (cover)" onChange={setFeatured} />
+          <p className="text-xs text-ink-500">Shown on project cards and at the top of the project page. You can also press “Set as main” on any image below.</p>
         </div>
 
         <div className="card p-5 space-y-4">
@@ -151,6 +154,17 @@ export function ProjectForm({ values, categories, created }: { values: ProjectFo
           </Field>
           <Field label="Completion date" name="completedAt" error={errors.completedAt}>
             <input id="completedAt" name="completedAt" type="date" className="input" defaultValue={values.completedAt} />
+          </Field>
+          <Field label="Interactive demo" name="demoKey" error={errors.demoKey} hint="Adds a “Try Interactive Demo” button. Demos run on sample data only.">
+            <select id="demoKey" name="demoKey" className="input" defaultValue={values.demoKey}>
+              <option value="">Automatic (match by project title)</option>
+              <option value={DEMO_NONE}>No interactive demo</option>
+              {DEMOS.map((d) => (
+                <option key={d.key} value={d.key}>
+                  {d.title}
+                </option>
+              ))}
+            </select>
           </Field>
           <Field label="Live demo URL" name="demoUrl" error={errors.demoUrl}>
             <input id="demoUrl" name="demoUrl" type="url" className="input" defaultValue={values.demoUrl} placeholder="https://" />

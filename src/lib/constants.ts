@@ -100,6 +100,19 @@ export const CATEGORY_TYPES = ["project", "post"] as const;
 export const IMAGE_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
 export const ATTACHMENT_MIME_TYPES = [...IMAGE_MIME_TYPES, "application/pdf"] as const;
 
+/** Where an image came from. Shown to visitors so generated pictures are never mistaken for real photos. */
+export const MEDIA_SOURCES = ["UPLOAD", "AI_GENERATED", "ILLUSTRATION"] as const;
+export type MediaSource = (typeof MEDIA_SOURCES)[number];
+export const MEDIA_SOURCE_LABELS: Record<MediaSource, string> = {
+  UPLOAD: "Uploaded photo / screenshot",
+  AI_GENERATED: "AI-generated image",
+  ILLUSTRATION: "Illustration",
+};
+
+/** How a project image is presented on the project page. */
+export const PROJECT_IMAGE_KINDS = ["GALLERY", "SCREENSHOT"] as const;
+export type ProjectImageKind = (typeof PROJECT_IMAGE_KINDS)[number];
+
 export const IMAGE_VARIANT_WIDTHS = [480, 960, 1440, 1920] as const;
 
 export const SESSION_COOKIE = "raremedia_session";

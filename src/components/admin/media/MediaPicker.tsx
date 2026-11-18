@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Check, Loader2, Search, X } from "lucide-react";
 import type { MediaDTO } from "@/lib/media/dto";
 import { cn } from "@/lib/utils";
+import { AiImageGenerator } from "./AiImageGenerator";
 import { Uploader } from "./Uploader";
 
 /**
@@ -11,7 +12,7 @@ import { Uploader } from "./Uploader";
  * upload new ones on the spot.
  */
 export function MediaPicker({ open, onClose, onSelect, multiple = false, folder = "general", title = "Choose image" }: { open: boolean; onClose: () => void; onSelect: (items: MediaDTO[]) => void; multiple?: boolean; folder?: string; title?: string }) {
-  const [tab, setTab] = useState<"library" | "upload">("library");
+  const [tab, setTab] = useState<"library" | "upload" | "generate">("library");
   const [items, setItems] = useState<MediaDTO[]>([]);
   const [q, setQ] = useState("");
   const [page, setPage] = useState(1);
@@ -78,9 +79,9 @@ export function MediaPicker({ open, onClose, onSelect, multiple = false, folder 
       <div className="flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl">
         <div className="flex items-center justify-between border-b border-ink-200 px-5 py-4">
           <div className="flex items-center gap-1 rounded-full bg-ink-100 p-1">
-            {(["library", "upload"] as const).map((t) => (
+            {(["library", "upload", "generate"] as const).map((t) => (
               <button key={t} type="button" onClick={() => setTab(t)} className={cn("rounded-full px-4 py-1.5 text-sm font-semibold capitalize", tab === t ? "bg-white shadow text-ink-900" : "text-ink-500")}>
-                {t}
+                {t === "generate" ? "Generate with AI" : t}
               </button>
             ))}
           </div>
@@ -90,7 +91,22 @@ export function MediaPicker({ open, onClose, onSelect, multiple = false, folder 
         </div>
 
         <div className="flex-1 overflow-y-auto p-5">
-          {tab === "upload" ? (
+          {tab === "generate" ? (
+            <AiImageGenerator
+              folder={folder}
+              onGenerated={(item) => {
+                if (multiple) {
+                  setSelected((s) => ({ ...s, [item.id]: item }));
+                  setTab("library");
+                  setPage(1);
+                  load(q, 1);
+                } else {
+                  onSelect([item]);
+                  onClose();
+                }
+              }}
+            />
+          ) : tab === "upload" ? (
             <Uploader
               folder={folder}
               onUploaded={(uploaded) => {

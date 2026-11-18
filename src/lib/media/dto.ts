@@ -16,6 +16,7 @@ export interface MediaDTO {
   size: number;
   folder: string;
   isDemo: boolean;
+  source: string;
   createdAt: string;
 }
 
@@ -35,6 +36,7 @@ export function toMediaDTO(m: Media): MediaDTO {
     size: m.size,
     folder: m.folder,
     isDemo: m.isDemo,
+    source: m.source,
     createdAt: m.createdAt.toISOString(),
   };
 }

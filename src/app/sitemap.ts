@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { DEMOS } from "@/components/demos/registry";
 import { getPublishedPosts, getPublishedProjects } from "@/lib/queries/public";
 import { siteUrl } from "@/lib/utils";
 
@@ -7,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [projects, posts] = await Promise.all([getPublishedProjects(), getPublishedPosts()]);
-  const staticPages: MetadataRoute.Sitemap = ["/", "/services", "/solutions", "/projects", "/portfolio", "/about", "/blog", "/contact", "/request-project", "/privacy"].map((p) => ({
+  const staticPages: MetadataRoute.Sitemap = ["/", "/services", "/solutions", "/projects", "/portfolio", "/demos", ...DEMOS.map((d) => `/demos/${d.key}`), "/about", "/blog", "/contact", "/request-project", "/privacy"].map((p) => ({
     url: siteUrl(p),
     lastModified: new Date(),
     changeFrequency: p === "/" ? "weekly" : "monthly",

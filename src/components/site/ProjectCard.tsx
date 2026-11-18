@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, MousePointerClick } from "lucide-react";
+import { resolveDemo } from "@/components/demos/registry";
 import { parseList } from "@/lib/json";
 import { toImageSource } from "@/lib/media/image-src";
 import type { PublicProject } from "@/lib/queries/public";
@@ -10,6 +11,7 @@ import { ResponsiveImage } from "./ResponsiveImage";
 export function ProjectCard({ project, priority = false, className }: { project: PublicProject; priority?: boolean; className?: string }) {
   const image = toImageSource(project.featuredImage ?? project.images[0]?.media);
   const tech = parseList(project.technologies).slice(0, 4);
+  const demo = resolveDemo(project);
   const status = PROJECT_STATUS_LABELS[project.projectStatus as ProjectStatus] ?? project.projectStatus;
 
   return (
@@ -37,10 +39,15 @@ export function ProjectCard({ project, priority = false, className }: { project:
             ))}
           </ul>
         )}
-        <div className="mt-auto pt-5">
-          <Link href={`/projects/${project.slug}`} className="inline-flex items-center gap-1 text-sm font-semibold text-brand-700 group-hover:gap-2 transition-all">
-            View project <ArrowUpRight className="h-4 w-4" />
+        <div className="mt-auto flex flex-wrap items-center gap-2 pt-5">
+          <Link href={`/projects/${project.slug}`} className="btn btn-secondary btn-sm">
+            View Project Details <ArrowUpRight className="h-4 w-4" />
           </Link>
+          {demo && (
+            <Link href={`/demos/${demo.key}?from=${project.slug}`} className="btn btn-primary btn-sm" title="Opens a simulated demo with sample data">
+              <MousePointerClick className="h-4 w-4" /> Try Interactive Demo
+            </Link>
+          )}
         </div>
       </div>
     </article>

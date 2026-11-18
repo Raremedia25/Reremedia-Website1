@@ -4,6 +4,7 @@
  *
  *   npm run db:seed            # safe to re-run; skips content that exists
  *   npm run db:seed -- --force # re-creates demo projects/posts/images
+ *   npm run db:seed -- --add-missing # only adds seed projects whose slug does not exist yet
  */
 import { promises as fs } from "node:fs";
 import path from "node:path";
@@ -12,11 +13,12 @@ import sharp from "sharp";
 import { resolveDatabaseUrl } from "../src/lib/db";
 import { processAndStoreImage } from "../src/lib/media/process";
 import { seedCore } from "../src/lib/seed/core";
-import { ILLUSTRATIONS, renderIllustration } from "./illustrations";
+import { ILLUSTRATIONS, SECTOR_SCENES, renderIllustration } from "./illustrations";
 import { POSTS, PROJECTS, type SeedProject } from "./seed-data";
 
 const prisma = new PrismaClient({ datasourceUrl: resolveDatabaseUrl() });
 const force = process.argv.includes("--force");
+const addMissing = process.argv.includes("--add-missing");
 const LEGACY_ASSETS = path.resolve(process.cwd(), "legacy/src/assets/projects");
 
 function escapeXml(s: string) {
@@ -91,7 +93,7 @@ async function seedBase() {
   );
 }
 
-async function createMedia(buffer: Buffer, mime: string, originalName: string, alt: string, caption: string, isDemo: boolean, userId: string) {
+async function createMedia(buffer: Buffer, mime: string, originalName: string, alt: string, caption: string, isDemo: boolean, userId: string, source = "UPLOAD") {
   const stored = await processAndStoreImage(buffer, mime, "projects");
   return prisma.media.create({
     data: {
@@ -109,6 +111,7 @@ async function createMedia(buffer: Buffer, mime: string, originalName: string, a
       alt,
       caption,
       isDemo,
+      source,
       uploadedById: userId,
     },
   });
@@ -116,17 +119,21 @@ async function createMedia(buffer: Buffer, mime: string, originalName: string, a
 
 async function seedProjects(categoryMap: Record<string, string>, userId: string) {
   const count = await prisma.project.count();
-  if (count > 0 && !force) {
-    console.log(`• Projects already exist (${count}); skipping demo projects. Use --force to recreate.`);
+  if (count > 0 && !force && !addMissing) {
+    console.log(`• Projects already exist (${count}); skipping demo projects. Use --add-missing to add new seed projects or --force to recreate.`);
     return;
   }
+  const existingSlugs = new Set(force ? [] : (await prisma.project.findMany({ select: { slug: true } })).map((p) => p.slug));
   if (force) {
     await prisma.project.deleteMany({ where: { slug: { in: PROJECTS.map((p) => p.slug) } } });
     const demo = await prisma.media.findMany({ where: { isDemo: true }, select: { id: true } });
     const { deleteMediaCompletely } = await import("../src/lib/media/process");
     for (const m of demo) await deleteMediaCompletely(m.id);
   }
+  let created = 0;
   for (const p of PROJECTS) {
+    if (existingSlugs.has(p.slug)) continue;
+    created++;
     let buffer: Buffer | null = null;
     let mime = "image/png";
     let isDemo = true;
@@ -141,8 +148,16 @@ async function seedProjects(categoryMap: Record<string, string>, userId: string)
         console.warn(`  ! screenshot ${p.screenshot} not found, generating placeholder`);
       }
     }
-    if (!buffer) buffer = await placeholderCover(p);
-    const media = await createMedia(buffer, mime, originalName, `${p.title} – ${isDemo ? "demo cover image" : "screenshot"}`, p.caption ?? (isDemo ? "Demo cover image. Replace with real screenshots from the admin dashboard." : ""), isDemo, userId);
+    // Sector illustration: shows what the system is used for. It becomes the
+    // cover when there is no real screenshot, and always joins the gallery.
+    const scene = p.scene ? SECTOR_SCENES[p.scene] : null;
+    const sceneMedia = scene ? await createMedia(await renderIllustration(scene.svg), "image/png", `${p.slug}-illustration.png`, scene.alt, scene.caption, false, userId, "ILLUSTRATION") : null;
+    const media = buffer || !sceneMedia ? await createMedia(buffer ?? (await placeholderCover(p)), mime, originalName, `${p.title} – ${isDemo ? "demo cover image" : "screenshot"}`, p.caption ?? (isDemo ? "Demo cover image. Replace with real screenshots from the admin dashboard." : ""), isDemo, userId) : sceneMedia;
+    if (media === sceneMedia) isDemo = false;
+    const images = [
+      { mediaId: media.id, order: 0, kind: p.screenshot && media !== sceneMedia ? "SCREENSHOT" : "GALLERY", caption: media.caption || null },
+      ...(sceneMedia && sceneMedia !== media ? [{ mediaId: sceneMedia.id, order: 1, kind: "GALLERY", caption: sceneMedia.caption }] : []),
+    ];
 
     const publishedAt = new Date(Date.now() - p.order * 86400000 * 7);
     await prisma.project.create({
@@ -159,16 +174,17 @@ async function seedProjects(categoryMap: Record<string, string>, userId: string)
         completedAt: p.projectStatus === "COMPLETED" ? publishedAt : null,
         features: JSON.stringify(p.features),
         technologies: JSON.stringify(p.technologies),
+        demoKey: p.demoKey ?? null,
         featuredImageId: media.id,
         isFeatured: !!p.isFeatured,
         order: p.order,
         authorId: userId,
-        images: { create: [{ mediaId: media.id, order: 0, caption: media.caption || null }] },
+        images: { create: images },
       },
     });
-    console.log(`  ✓ ${p.title}${isDemo ? " (demo cover)" : " (screenshot)"}`);
+    console.log(`  ✓ ${p.title}${media === sceneMedia ? " (illustration)" : isDemo ? " (demo cover)" : " (screenshot)"}`);
   }
-  console.log(`• Projects: ${PROJECTS.length}`);
+  console.log(`• Projects: ${created} created${existingSlugs.size ? `, ${PROJECTS.length - created} already present` : ""}`);
 }
 
 async function seedPosts(categoryMap: Record<string, string>, userId: string) {

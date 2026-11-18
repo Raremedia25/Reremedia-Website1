@@ -13,6 +13,7 @@ export interface ImageSource {
   srcSet: string;
   blurDataUrl: string | null;
   isDemo: boolean;
+  source: string;
 }
 
 export function toImageSource(media: Media | null | undefined): ImageSource | null {
@@ -34,7 +35,17 @@ export function toImageSource(media: Media | null | undefined): ImageSource | nu
     srcSet,
     blurDataUrl: media.blurDataUrl,
     isDemo: media.isDemo,
+    source: media.source,
   };
+}
+
+/** Public label for images that are not real photographs or product screenshots. */
+export function imageOriginLabel(image: Pick<ImageSource, "isDemo" | "source"> | null | undefined): string | null {
+  if (!image) return null;
+  if (image.source === "AI_GENERATED") return "AI-generated image";
+  if (image.source === "ILLUSTRATION") return "Illustration";
+  if (image.isDemo) return "Demo image";
+  return null;
 }
 
 /** Pick a reasonably small variant URL for thumbnails/OG images. */

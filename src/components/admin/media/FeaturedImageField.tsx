@@ -5,8 +5,12 @@ import { ImagePlus, X } from "lucide-react";
 import type { MediaDTO } from "@/lib/media/dto";
 import { MediaPicker } from "./MediaPicker";
 
-export function FeaturedImageField({ name = "featuredImageId", initial, folder, label = "Featured image" }: { name?: string; initial: MediaDTO | null; folder: string; label?: string }) {
-  const [image, setImage] = useState<MediaDTO | null>(initial);
+export function FeaturedImageField({ name = "featuredImageId", initial, folder, label = "Featured image", onChange }: { name?: string; initial: MediaDTO | null; folder: string; label?: string; onChange?: (m: MediaDTO | null) => void }) {
+  const [image, setImageState] = useState<MediaDTO | null>(initial);
+  const setImage = (m: MediaDTO | null) => {
+    setImageState(m);
+    onChange?.(m);
+  };
   const [open, setOpen] = useState(false);
   return (
     <div>
