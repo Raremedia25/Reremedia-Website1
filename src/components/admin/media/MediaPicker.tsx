@@ -19,6 +19,8 @@ export function MediaPicker({ open, onClose, onSelect, multiple = false, folder 
   const [pages, setPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<Record<string, MediaDTO>>({});
+  // The "Generate with AI" tab is only offered when the site has an image provider key.
+  const [aiConfigured, setAiConfigured] = useState(false);
 
   const load = useCallback(async (query: string, p: number) => {
     setLoading(true);
@@ -38,6 +40,18 @@ export function MediaPicker({ open, onClose, onSelect, multiple = false, folder 
     setTab("library");
     load(q, page);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    fetch("/api/admin/media/generate")
+      .then((r) => r.json())
+      .then((j) => !cancelled && setAiConfigured(!!j.configured))
+      .catch(() => !cancelled && setAiConfigured(false));
+    return () => {
+      cancelled = true;
+    };
   }, [open]);
 
   useEffect(() => {
@@ -79,7 +93,7 @@ export function MediaPicker({ open, onClose, onSelect, multiple = false, folder 
       <div className="flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl">
         <div className="flex items-center justify-between border-b border-ink-200 px-5 py-4">
           <div className="flex items-center gap-1 rounded-full bg-ink-100 p-1">
-            {(["library", "upload", "generate"] as const).map((t) => (
+            {(aiConfigured ? (["library", "upload", "generate"] as const) : (["library", "upload"] as const)).map((t) => (
               <button key={t} type="button" onClick={() => setTab(t)} className={cn("rounded-full px-4 py-1.5 text-sm font-semibold capitalize", tab === t ? "bg-white shadow text-ink-900" : "text-ink-500")}>
                 {t === "generate" ? "Generate with AI" : t}
               </button>
