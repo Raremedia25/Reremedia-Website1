@@ -16,6 +16,8 @@ const nextConfig: NextConfig = {
   // Serverless bundlers (Netlify/Vercel) sometimes miss Prisma's native engine.
   outputFileTracingIncludes: {
     "/**": ["./node_modules/.prisma/client/*.node", "./node_modules/.prisma/client/schema.prisma"],
+    // Images read from disk by the one-shot portfolio import.
+    "/api/setup/content": ["./prisma/seed-assets/*", "./legacy/src/assets/projects/*"],
   },
   async headers() {
     return [
