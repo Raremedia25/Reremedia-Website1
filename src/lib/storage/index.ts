@@ -2,10 +2,11 @@ import { cloudinaryStorageAdapter } from "./cloudinary";
 import { localStorageAdapter } from "./local";
 import { netlifyBlobsStorageAdapter } from "./netlify-blobs";
 import type { StorageAdapter } from "./types";
+import { vercelBlobStorageAdapter } from "./vercel-blob";
 
 export type { StorageAdapter, StoredObject } from "./types";
 
-/** Pick the configured storage provider (STORAGE_PROVIDER=local|cloudinary|netlify-blobs). */
+/** Pick the configured storage provider (STORAGE_PROVIDER=local|cloudinary|netlify-blobs|vercel-blob). */
 export function getStorage(): StorageAdapter {
   const provider = (process.env.STORAGE_PROVIDER ?? "local").toLowerCase();
   switch (provider) {
@@ -14,6 +15,8 @@ export function getStorage(): StorageAdapter {
     case "netlify-blobs":
     case "netlify":
       return netlifyBlobsStorageAdapter;
+    case "vercel-blob":
+      return vercelBlobStorageAdapter;
     case "local":
     default:
       return localStorageAdapter;
@@ -24,5 +27,6 @@ export function getStorage(): StorageAdapter {
 export function storageByName(name: string): StorageAdapter {
   if (name === "cloudinary") return cloudinaryStorageAdapter;
   if (name === "netlify-blobs" || name === "netlify") return netlifyBlobsStorageAdapter;
+  if (name === "vercel-blob") return vercelBlobStorageAdapter;
   return localStorageAdapter;
 }

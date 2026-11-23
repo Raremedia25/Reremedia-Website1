@@ -4,6 +4,7 @@ import { Readable } from "node:stream";
 import { NextResponse } from "next/server";
 import { resolveLocalFile } from "@/lib/storage/local";
 import { blobStore } from "@/lib/storage/netlify-blobs";
+import { readVercelBlob } from "@/lib/storage/vercel-blob";
 
 const MIME: Record<string, string> = {
   ".jpg": "image/jpeg",
@@ -16,7 +17,8 @@ const MIME: Record<string, string> = {
 };
 
 /**
- * Serves files written by the local storage adapter with long cache headers.
+ * Serves files written by the local, Netlify Blobs and Vercel Blob storage
+ * adapters with long cache headers.
  * Keys are random, so files are effectively immutable.
  */
 export async function GET(_req: Request, ctx: { params: Promise<{ path: string[] }> }) {
@@ -27,6 +29,24 @@ export async function GET(_req: Request, ctx: { params: Promise<{ path: string[]
   }
   const ext = path.extname(key).toLowerCase();
   const provider = (process.env.STORAGE_PROVIDER ?? "local").toLowerCase();
+  if (provider === "vercel-blob") {
+    try {
+      const found = await readVercelBlob(key);
+      if (!found) return new NextResponse("Not found", { status: 404 });
+      return new NextResponse(found.stream, {
+        headers: {
+          "Content-Type": MIME[ext] ?? "application/octet-stream",
+          "Content-Length": String(found.blob.size),
+          // s-maxage lets Vercel's CDN keep the file, so the function runs once per file.
+          "Cache-Control": "public, max-age=31536000, s-maxage=31536000, immutable",
+          "X-Content-Type-Options": "nosniff",
+          ...(ext === ".pdf" ? { "Content-Disposition": "inline" } : {}),
+        },
+      });
+    } catch {
+      return new NextResponse("Not found", { status: 404 });
+    }
+  }
   if (provider === "netlify-blobs" || provider === "netlify") {
     try {
       const blob = await blobStore().get(key, { type: "stream" });
