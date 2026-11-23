@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { saveSettingsAction } from "@/actions/settings";
 import type { ActionState } from "@/lib/actions-shared";
-import { SETTING_FIELDS, type SettingsMap } from "@/lib/settings";
+import { SETTING_FIELDS, type SettingsMap } from "@/lib/settings-fields";
 import { Field, FormAlert, SubmitButton } from "./forms";
 
 export function SettingsForm({ settings }: { settings: SettingsMap }) {

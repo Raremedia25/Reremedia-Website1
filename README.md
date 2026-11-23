@@ -47,6 +47,7 @@ from your `.env` (defaults: `admin@raremedia.local` / `ChangeMe123!`).
 | `npm run build` / `npm start` | Production build / server (stop a running `next start` before building on Windows: Prisma needs to replace a locked DLL) |
 | `npm run typecheck` | TypeScript check |
 | `npm run db:migration -- <slug>` | Generate a SQL migration in `netlify/database/migrations` from `prisma/schema.prisma` |
+| `npm run db:deploy` | Apply pending SQL migrations to a PostgreSQL database Netlify does not manage (Vercel + Neon deployment) |
 | `npm run db:seed` | Seed admin, categories, services, settings and demo content (safe to re-run) |
 | `npm run db:seed -- --force` | Re-create the demo projects/posts/images |
 | `npm run db:seed -- --add-missing` | Add only the seed projects whose slug does not exist yet (existing content untouched) |
@@ -179,6 +180,51 @@ register it in `index.ts`.
 
 ---
 
+## Deployment (Vercel + Neon)
+
+Vercel runs the Next.js server as it is; Neon provides PostgreSQL and Vercel
+Blob holds the uploaded media. All three have a free tier (Vercel's free
+"Hobby" plan is meant for personal, non-commercial projects; a company site
+is expected to use the paid Pro plan).
+
+1. **Database**: create a project at [neon.tech](https://neon.tech). Copy two
+   connection strings from its dashboard: the **pooled** one (host contains
+   `-pooler`) for the website, and the **direct** one for the scripts below.
+   Put the direct one in `.env.local`:
+   ```
+   TARGET_DATABASE_URL="postgresql://..."
+   ```
+2. **Vercel project**: import the GitHub repository at
+   [vercel.com/new](https://vercel.com/new) (framework: Next.js, default build
+   settings). In *Storage*, create a **Blob** store and connect it to the
+   project; this adds `BLOB_READ_WRITE_TOKEN`. Copy that token into
+   `.env.local` too (used once, for the media copy).
+3. **Environment variables** (Project → Settings → Environment Variables):
+
+   | Variable | Value |
+   |---|---|
+   | `DATABASE_URL` | the Neon **pooled** connection string |
+   | `AUTH_SECRET` | a long random string (`node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`) |
+   | `NEXT_PUBLIC_SITE_URL` | the public address, e.g. `https://raremedia.vercel.app` |
+   | `STORAGE_PROVIDER` | `vercel-blob` |
+   | `MAX_UPLOAD_MB`, `NEXT_PUBLIC_MAX_UPLOAD_MB` | `4` (Vercel rejects request bodies above 4.5 MB) |
+   | optional | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM`, `NOTIFY_EMAIL`, `OPENAI_API_KEY` |
+4. **Copy the live Netlify content** (one time, read-only on the Netlify side;
+   needs `netlify login` and `netlify link`):
+   ```bash
+   node scripts/migrate-to-vercel.mjs db       # every table, row counts verified
+   node scripts/migrate-to-vercel.mjs media    # every uploaded file -> Vercel Blob
+   ```
+   For a fresh site instead, run `npm run db:deploy`, deploy, and create the
+   first admin with `/api/setup` as described in the Netlify section below.
+5. **Deploy**: redeploy the project in Vercel (or push to the connected
+   branch) so it picks up the variables.
+
+**Schema changes later**: generate the SQL as described under
+[Database](#database), then run `npm run db:deploy` before deploying. It
+applies the files in `netlify/database/migrations` that the database has not
+seen yet (tracked in the `_migrations` table).
+
 ## Deployment (Netlify)
 
 `netlify.toml` configures the build (`@netlify/plugin-nextjs`, Node 22).
@@ -220,8 +266,23 @@ needed. Netlify Database requires a credit-based Netlify plan.
    to run once any user exists. Delete `SETUP_TOKEN` afterwards
    (`netlify env:unset SETUP_TOKEN`).
 
-   **Optional demo content** (projects, posts, images) can be seeded from your
-   machine: copy the read-write string from the dashboard (*Database →
+   **Portfolio projects** can be imported the same way, while `SETUP_TOKEN`
+   is still set and after the admin exists. The endpoint only adds seed
+   projects whose slug is missing and never changes existing content. List
+   what is pending, then import one project per call:
+   ```bash
+   curl -X POST https://raremedia.netlify.app/api/setup/content \
+     -H "Authorization: Bearer <SETUP_TOKEN>"                 # { "pending": [slugs], "total": n }
+   curl -X POST "https://raremedia.netlify.app/api/setup/content?slug=<slug>" \
+     -H "Authorization: Bearer <SETUP_TOKEN>"                 # repeat for each pending slug
+   ```
+   It returns 404 when `SETUP_TOKEN` is not set, so unset the token when done.
+   The project images come from `prisma/seed-assets`; run
+   `npm run db:seed:assets` and commit the result after changing seed images
+   that contain text (serverless functions have no fonts).
+
+   **Optional demo content** (posts, images, and the same projects) can
+   instead be seeded from your machine: copy the read-write string from the dashboard (*Database →
    production branch → Copy connection string*, Team Owner only) into
    `.env.local` together with the `SEED_ADMIN_*` values:
    ```
